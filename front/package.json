@@ -1,0 +1,12 @@
+{
+  "name": "frontend-app",
+  "version": "1.0.0",
+  "description": "Simple static site",
+  "private": true,
+  "scripts": {
+    "start": "serve -l 8080 ."
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+}

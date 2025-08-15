@@ -1,0 +1,13 @@
+{
+  "name": "backend-app",
+  "version": "1.0.0",
+  "description": "Simple backend application",
+  "main": "ff.js",
+  "scripts": {
+    "start": "node ff.js",
+    "dev": "node ff.js"
+  },
+  "keywords": ["node", "javascript"],
+  "author": "",
+  "license": "ISC"
+}

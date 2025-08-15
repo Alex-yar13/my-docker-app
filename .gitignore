@@ -1,0 +1,13 @@
+# OS / IDE
+.DS_Store
+.idea
+.vscode/*
+!/.vscode/extensions.json
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Logs
+*.log
