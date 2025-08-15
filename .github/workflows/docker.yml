@@ -8,25 +8,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    permissions: { contents: read, packages: write }
     steps:
       - uses: actions/checkout@v4
 
-      # делаем имя владельца строчными (на всякий случай)
-      - name: Set owner lowercase
-        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+      - name: Set env (owner lowercase + short sha)
+        run: |
+          echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
+          echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
-      # включаем QEMU для сборки под другие архитектуры
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      # настраиваем buildx (нужен для multi-arch)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # логин в GHCR
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -34,8 +30,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # backend: multi-arch
-      - name: Build & push backend
+      - name: Build & push backend (multi-arch)
         uses: docker/build-push-action@v6
         with:
           context: ./back
@@ -43,9 +38,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/backend:latest
+            ghcr.io/${{ env.OWNER_LC }}/backend:${{ env.SHORT_SHA }}
 
-      # frontend: multi-arch
-      - name: Build & push frontend
+      - name: Build & push frontend (multi-arch)
         uses: docker/build-push-action@v6
         with:
           context: ./front
@@ -53,3 +48,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/frontend:latest
+            ghcr.io/${{ env.OWNER_LC }}/frontend:${{ env.SHORT_SHA }}
