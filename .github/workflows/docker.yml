@@ -2,17 +2,21 @@ name: Build & Push images to GHCR
 
 on:
   push:
-    branches: [ "main" ]   # собираем при каждом пуше в main
-  workflow_dispatch:        # возможность запустить вручную
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write       # нужно, чтобы пушить в GHCR
+      packages: write
     steps:
       - uses: actions/checkout@v4
+
+      # Делаем имя владельца (организация/аккаунт) строчными
+      - name: Set owner lowercase
+        run: echo "OWNER_LC=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -29,11 +33,11 @@ jobs:
         with:
           context: ./back
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/backend:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/backend:latest
 
       - name: Build & push frontend
         uses: docker/build-push-action@v6
         with:
           context: ./front
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/frontend:latest
+          tags: ghcr.io/${{ env.OWNER_LC }}/frontend:latest
